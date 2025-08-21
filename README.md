@@ -2,6 +2,18 @@
 
 一个基于 Model Context Protocol (MCP) 的任务和记忆管理服务，提供完整的项目管理、知识管理和版本控制能力。
 
+本项目基于[cjo4m06/mcp-shrimp-task-manager](https://github.com/cjo4m06/mcp-shrimp-task-manager) 修改与扩展
+
+- 切换编程语言，采用Python
+- 任务管理由文件改为数据库
+- 添加任务版本管理
+- 添加记忆功能
+
+该项目配套的前端项目 [shrimp-frontend](https://github.com/yourusername/shrimp-frontend) 提供了用户界面和交互功能。
+
+另外，构建了一套智能体系统，详细内容见: [wr124](https://github.com/weinaike/wr124)
+
+
 ## 特性
 
 - **多租户隔离**：基于 `project_id` 的严格数据隔离
@@ -212,6 +224,11 @@ mypy shrimp/
 - **black**：代码格式化
 - **mypy**：类型检查
 - **httpx**：HTTP 客户端
+
+## 灵感来源
+
+- 🔗 任务管理：[cjo4m06/mcp-shrimp-task-manager](https://github.com/cjo4m06/mcp-shrimp-task-manager)
+
 
 ## 许可证
 
