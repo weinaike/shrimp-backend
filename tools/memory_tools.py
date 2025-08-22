@@ -8,7 +8,8 @@ This module provides comprehensive memory management functionality including:
 - Verification status tracking
 """
 
-from typing import List, Optional
+from tokenize import Name
+from typing import Annotated, Any, Dict, List, Optional
 from fastmcp import FastMCP
 
 from shrimp.models.memory import MemoryCreate, MemoryUpdate
@@ -33,8 +34,8 @@ def register_memory_tools(app: FastMCP):
     """
     
     @app.tool
-    async def create_memory(memory_create: MemoryCreate):
-        """创建新记忆
+    async def add_memory(memory_create: MemoryCreate) -> Dict[str, Any]:
+        """添加新记忆
         
         智能体接口说明：
         - 功能：在项目中创建新的知识记忆条目
@@ -43,13 +44,6 @@ def register_memory_tools(app: FastMCP):
         - 项目隔离：自动从请求头获取project_id
         - 用途：智能体保存重要的知识点、解决方案、经验总结
         - 特性：支持标签分类、任务关联、向量搜索
-        
-        Args:
-            memory_create (MemoryCreate): Memory creation data including content,
-                                        tags, task association, etc.
-        
-        Returns:
-            dict: Created memory data with generated ID, or None if failed
         """
         memory_service = await get_mcp_memory_service()
         project_id = BaseTool.get_project_id()
@@ -58,18 +52,12 @@ def register_memory_tools(app: FastMCP):
             memory = await memory_service.create_memory(project_id, memory_create)
             return MCPToolResponse.success(
                 data=memory.model_dump(),
-                operation="create_memory",
-                message=f"Successfully created memory with {len(memory_create.tags)} tags",
-                metadata={
-                    "project_id": project_id,
-                    "memory_id": memory.id,
-                    "tags_count": len(memory_create.tags),
-                    "task_associated": memory_create.task_id is not None,
-                }
+                operation="add_memory",
+                message=f"Successfully created memory with {len(memory_create.tags)} tags. you can do NEXT todo or task if have",
             )
         except Exception as e:
             return MCPToolResponse.error(
-                operation="create_memory",
+                operation="add_memory",
                 error_message=str(e),
                 metadata={"project_id": project_id}
             )

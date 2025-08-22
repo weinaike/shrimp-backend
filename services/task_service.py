@@ -409,7 +409,8 @@ class TaskService:
         project_id: str,
         task_id: str,
         summary: str,
-        score: int
+        score: int,
+        session_id: Optional[str] = None
     ) -> ServiceResponse[Task]:
         """Verify task completion and update status."""
         try:
@@ -443,14 +444,15 @@ class TaskService:
                 # Task passes verification
                 task_update = TaskUpdate(
                     status="completed",
-                    summary=summary
+                    summary=summary,
+                    session_id=session_id
                 )
                 
                 updated_task_response = await self.update_task(project_id, task_id, task_update)
                 if not updated_task_response.success:
                     return updated_task_response
 
-                updated_task_response.message = f"Task {task.name} completed successfully. next work is using `add_memory` to record it."
+                updated_task_response.message = f"Task {task.name} completed successfully."
                 return updated_task_response
             else:
                 # Task needs improvement - set to in_progress if pending
@@ -462,7 +464,7 @@ class TaskService:
                 
                 return ServiceResponse.success_response(
                     task,
-                    f"Task {task.name} needs improvement (score: {score}/100), please using todo_write append new todos for remaining issues"
+                    f"Task {task.name} needs improvement (score: {score}/100)."
                 )
                 
         except Exception as e:
@@ -564,7 +566,7 @@ class TaskService:
 
     # ==================== Todo Management Methods ====================
     
-    async def get_todos(self, project_id: str, task_id: str) -> ServiceResponse[List[Dict[str, Any]]]:
+    async def get_todos(self, project_id: str, task_id: str) -> ServiceResponse[List[TodoItem]]:
         """Get todos for a specific task."""
         try:
             # Validate task ID format
@@ -581,6 +583,7 @@ class TaskService:
                 return ServiceResponse.not_found_error(f"Task {task_id}")
             
             todos = task_data.get("todos", [])
+            todos = [TodoItem(**todo) for todo in todos]
             return ServiceResponse.success_response(todos, "Todos retrieved successfully")
             
         except bson_errors.InvalidId:
@@ -588,7 +591,7 @@ class TaskService:
         except Exception as e:
             return ServiceResponse.error_response(f"Failed to get todos: {str(e)}")
     
-    async def set_todos(self, project_id: str, task_id: str, todos: List[TodoItem], notes:str, changed_by: str = "system") -> ServiceResponse[List[Dict[str, Any]]]:
+    async def set_todos(self, project_id: str, task_id: str, todos: List[TodoItem], notes:str, changed_by: str = "system") -> ServiceResponse[List[TodoItem]]:
         """Set todos for a specific task."""
         try:
             # Validate task ID format
@@ -649,7 +652,7 @@ class TaskService:
                 )
             except Exception as e:
                 print(f"Warning: Failed to create version for todos update of task {task_id}: {str(e)}")
-            
+            validated_todos = [TodoItem(**todo) for todo in validated_todos]
             return ServiceResponse.success_response(validated_todos, "Todos updated successfully")
             
         except bson_errors.InvalidId:

@@ -28,7 +28,7 @@ async def create_task(
     return handle_service_response(response)
 
 
-@router.post("/{project_id}/tasks/bulk_create")
+@router.post("/{project_id}/tasks/bulk_create", response_model=List[Task])
 async def bulk_create_tasks(
     project_id: str,
     tasks: List[TaskCreate],
@@ -195,7 +195,7 @@ async def delete_project(project_id: str):
         )
 
 
-@router.get("/{project_id}/tasks/{task_id}/todos")
+@router.get("/{project_id}/tasks/{task_id}/todos", response_model=List[TodoItem])
 async def get_todos(
     project_id: str,
     task_id: str,
@@ -210,7 +210,7 @@ async def get_todos(
     return handle_service_response(response)
 
 
-@router.put("/{project_id}/tasks/{task_id}/todos")
+@router.put("/{project_id}/tasks/{task_id}/todos", response_model=List[TodoItem])
 async def set_todos(
     project_id: str,
     task_id: str,

@@ -17,6 +17,18 @@ class BaseTool:
             str: Project ID from X-Project-ID header, defaults to 'default' if not found
         """
         return get_project_id_from_request()
+    @staticmethod
+    def get_session_id() -> Optional[str]:
+        """Get session_id from HTTP request headers.
+        
+        Returns:
+            Optional[str]: Session ID from X-Session-ID header, defaults to None if not found
+        """
+        try:
+            request = get_http_request()
+            return request.headers.get('X-Session-ID', None)
+        except:
+            return None
 
 
 def get_project_id_from_request() -> str:

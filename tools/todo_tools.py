@@ -107,18 +107,34 @@ When in doubt, use this tool. Being proactive with todo management demonstrates 
         try:
             task_service = await get_mcp_task_service()
             project_id = BaseTool.get_project_id()
+
+            old = await task_service.get_todos(project_id, task_id)
+            old_completed_count = len([todo for todo in old.data if todo.status == "completed"])
+            new_completed_count = len([todo for todo in todos if todo.status == "completed"])
+
             result = await task_service.set_todos(project_id, task_id, todos, notes, changed_by=operator)
             
+
+            
             if result.success:
-                completed = True
+                more_one = False
+                if new_completed_count > old_completed_count:
+                    more_one = True
+                all_completed = True
                 status = [todo.get("status") for todo in result.data]
                 if "in_progress" in status or "pending" in status:
-                    completed = False
+                    all_completed = False
+
+                msg = f"Successfully updated todos for task {task_id}\n"
+                if more_one and not all_completed:
+                    msg += "First, use `add_memory` tool to summarize the execution process of this completed todo item. Then continue executing the next todo item.\n"
+                elif all_completed:
+                    msg += f"Now, All todo items have been completed. Use `acquire_task` tool to review the task's objectives and verification_criteria, and then submit the acceptance report through `verify_task` tool."
 
                 return MCPToolResponse.success(
                     data=result.data,
                     operation="todo_write",
-                    message=f"Successfully updated todos for task {task_id}" if completed is False else "All todos completed, call verify_task tool to complete the task"
+                    message=msg
                 )
             else:
                 return MCPToolResponse.error(

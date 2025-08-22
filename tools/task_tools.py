@@ -155,6 +155,8 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
         """
         task_service = await get_mcp_task_service()
         project_id = BaseTool.get_project_id()
+        session_id = BaseTool.get_session_id()
+        task_create.session_id = session_id  # Set session_id for task tracking
         response = await task_service.create_task(project_id, task_create, changed_by=operator)
 
         if response.success and response.data:
@@ -337,7 +339,7 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
                     "task_id": task_id
                 }
             )
-
+        task_update.session_id = BaseTool.get_session_id()  # Set session_id for task tracking
         response = await task_service.update_task(project_id, task_id, task_update, 
                                                   if_match=None, changed_by=operator)
 
@@ -456,7 +458,9 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
         """
         task_service = await get_mcp_task_service()
         project_id = BaseTool.get_project_id()
-        
+        session_id = BaseTool.get_session_id()
+        for task in tasks:
+            task.session_id = session_id
         # Convert string update_mode to UpdateMode enum
         try:
             update_mode_enum = UpdateMode(update_mode)
@@ -493,6 +497,17 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
                     "global_analysis_provided": global_analysis_result is not None
                 }
             )
+    verify_task_return_prompt = '''
+using `add_memory` tool to provide a summary of this completed task, including the following key points:
+
+1. Task objectives and main accomplishments
+2. Key points of the implemented solution
+3. Major challenges encountered and solutions
+
+Important Note: Please provide the task summary in the current response. 
+
+'''
+
 
     @app.tool
     async def verify_task(
@@ -530,10 +545,18 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
         response = await task_service.verify_task(project_id, task_id, summary, score)
 
         if response.success and response.data:
+
+            task = response.data
+            msg = response.message or ""
+            if task.status == "completed":
+                msg += f'{verify_task_return_prompt}'
+            else:
+                msg += f"please using todo_write append new todos for remaining issues"
+
             return MCPToolResponse.success(
                 data=response.data.model_dump(),
                 operation="verify_task",
-                message=response.message,
+                message=msg,
                 metadata={
                     "project_id": project_id,
                     "task_id": task_id,

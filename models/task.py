@@ -41,7 +41,7 @@ class TaskCreate(BaseModel):
     implementation_guide: Optional[str] = Field(..., description="具体阐述实现指南")
     verification_criteria: Optional[str] = Field(..., description="详细描述验证标准")
     related_files: List[Dict[str, Any]] = Field(default_factory=list, description="与任务相关的文件列表，用于记录与任务相关的代码文件、参考资料、要建立的文件等")
-    
+    session_id: Optional[str] = Field(None, description="会话ID")
 
 class TaskUpdate(BaseModel):
     """Task update model."""
@@ -54,7 +54,7 @@ class TaskUpdate(BaseModel):
     verification_criteria: Optional[str] = Field(None, description="验证标准")
     related_files: Optional[List[Dict[str, Any]]] = Field(None, description="与任务相关的文件列表，用于记录与任务相关的代码文件、参考资料、要建立的文件等")
     summary: Optional[str] = Field(None, description="任务摘要")
-
+    session_id: Optional[str] = Field(None, description="会话ID")
 
 class Task(DocumentBase):
     """Task model as stored in database."""
@@ -76,6 +76,7 @@ class Task(DocumentBase):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
     deleted_at: Optional[datetime] = Field(None, description="删除时间")
     todos: List[TodoItem] = Field(default_factory=list, description="待办事项列表")
+    session_id: Optional[str] = Field(None, description="会话ID, 描述任务来源那次会话")
     model_config = ConfigDict(populate_by_name=True)
 
 
