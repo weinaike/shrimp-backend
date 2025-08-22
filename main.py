@@ -40,7 +40,6 @@ mcp = FastMCP(
 # 3. Register all tool modules
 # 注册任务管理工具 - 提供完整的任务CRUD、批量操作、状态管理功能
 register_task_tools(mcp)
-
 # 注册记忆管理工具 - 提供知识存储、搜索、标签分类、向量索引功能
 register_memory_tools(mcp)
 # 注册待办事项管理工具 - 提供任务的代办事项管理功能

@@ -20,8 +20,8 @@ class MemoryService:
         memory_data = {
             **memory_create.model_dump(),
             "project_id": project_id,
-            "created_at": datetime.now(timezone.utc),
-            "updated_at": datetime.now(timezone.utc),
+            "created_at": datetime.now().astimezone(),
+            "updated_at": datetime.now().astimezone(),
         }
         
         # Validate task exists if task_id provided
@@ -116,7 +116,7 @@ class MemoryService:
         """Update a memory."""
         try:
             update_data = memory_update.model_dump(exclude_unset=True)
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now().astimezone()
             
             # Validate task exists if task_id is being updated
             if "task_id" in update_data:

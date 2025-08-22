@@ -40,8 +40,8 @@ class TaskService:
                 "current_version_id": str(ObjectId()),  # Generate initial version
                 "version_number": 1,
                 "status": TaskStatus.PENDING,
-                "created_at": datetime.now(timezone.utc),
-                "updated_at": datetime.now(timezone.utc),
+                "created_at": datetime.now().astimezone(),
+                "updated_at": datetime.now().astimezone(),
             }
             
             # Resolve dependencies (handle both names and IDs)
@@ -136,8 +136,8 @@ class TaskService:
             # Handle different update input types
             update_data = updates.model_dump(exclude_unset=True)
 
-            update_data["updated_at"] = datetime.now(timezone.utc)
-            
+            update_data["updated_at"] = datetime.now().astimezone()
+
             # Resolve dependencies if provided (handle both names and IDs)
             if "dependencies" in update_data:
                 resolved_deps, errors = await self._resolve_dependencies_by_name(project_id, update_data["dependencies"])
@@ -198,8 +198,8 @@ class TaskService:
                 },
                 {
                     "$set": {
-                        "deleted_at": datetime.now(timezone.utc),
-                        "updated_at": datetime.now(timezone.utc)
+                        "deleted_at": datetime.now().astimezone(),
+                        "updated_at": datetime.now().astimezone()
                     }
                 }
             )
@@ -241,8 +241,8 @@ class TaskService:
                 {"project_id": project_id, "deleted_at": None},
                 {
                     "$set": {
-                        "deleted_at": datetime.now(timezone.utc),
-                        "updated_at": datetime.now(timezone.utc)
+                        "deleted_at": datetime.now().astimezone(),
+                        "updated_at": datetime.now().astimezone()
                     }
                 }
             )
@@ -312,8 +312,8 @@ class TaskService:
                     "current_version_id": str(ObjectId()),
                     "version_number": 1,
                     "status": TaskStatus.PENDING,
-                    "created_at": datetime.now(timezone.utc),
-                    "updated_at": datetime.now(timezone.utc),
+                    "created_at": datetime.now().astimezone(),
+                    "updated_at": datetime.now().astimezone(),
                 }
                 tasks_data.append(task_data)
             
@@ -515,7 +515,7 @@ class TaskService:
             task = task_response.data
             
             # Get dependency tasks (tasks this task depends on)
-            dependencies = []
+            dependencies:list[Task] = []
             if task.dependencies:
                 # All dependencies should be ObjectId format
                 dependency_object_ids = []
@@ -540,7 +540,7 @@ class TaskService:
                         dependencies.append(Task(**dep_task))
             
             # Get dependent tasks (tasks that depend on this task)
-            dependents = []
+            dependents:list[Task] = []
             cursor = self.db.tasks.find({
                 "dependencies": task_id,
                 "project_id": project_id,
@@ -603,11 +603,7 @@ class TaskService:
             for i, todo in enumerate(todos):
                 try:
                     # Convert TodoItem to dict for processing
-                    if isinstance(todo, TodoItem):
-                        todo_dict = todo.model_dump()
-                    else:
-                        todo_dict = dict(todo)
-                    
+                    todo_dict = todo.model_dump()
                     # Ensure required fields exist
                     if not todo_dict.get("id"):
                         todo_dict["id"] = f"todo_{i}"
@@ -632,7 +628,7 @@ class TaskService:
                 {
                     "$set": {
                         "todos": validated_todos,
-                        "updated_at": datetime.now(timezone.utc),
+                        "updated_at": datetime.now().astimezone(),
                         "notes": notes
                     }
                 }
@@ -989,8 +985,8 @@ class TaskService:
             "current_version_id": str(ObjectId()),
             "version_number": 1,
             "status": TaskStatus.PENDING,
-            "created_at": datetime.now(timezone.utc),
-            "updated_at": datetime.now(timezone.utc),
+            "created_at": datetime.now().astimezone(),
+            "updated_at": datetime.now().astimezone(),
         }
         
         # Resolve dependencies
@@ -1032,7 +1028,7 @@ class TaskService:
             tasks = tasks_response.data
             backup_data = {
                 "project_id": project_id,
-                "backup_timestamp": datetime.now(timezone.utc).isoformat(),
+                "backup_timestamp": datetime.now().astimezone().isoformat(),
                 "task_count": len(tasks),
                 "tasks": [task.model_dump() for task in tasks]
             }

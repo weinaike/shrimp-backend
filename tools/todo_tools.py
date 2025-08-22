@@ -121,7 +121,7 @@ When in doubt, use this tool. Being proactive with todo management demonstrates 
                 if new_completed_count > old_completed_count:
                     more_one = True
                 all_completed = True
-                status = [todo.get("status") for todo in result.data]
+                status = [todo.status for todo in result.data]
                 if "in_progress" in status or "pending" in status:
                     all_completed = False
 
