@@ -110,9 +110,28 @@ When in doubt, use this tool. Being proactive with todo management demonstrates 
 
             old = await task_service.get_todos(project_id, task_id)
             old_completed_count = len([todo for todo in old.data if todo.status == "completed"])
-            new_completed_count = len([todo for todo in todos if todo.status == "completed"])
 
-            result = await task_service.set_todos(project_id, task_id, todos, notes, changed_by=operator)            
+            # 合并新老代办事项
+            new_todo: list[TodoItem] = []
+            processed_ids = set()
+            
+            # 处理传入的新代办事项
+            for todo in todos:
+                # 无论新代办是否存在于老代办中，都直接添加（新代办优先）
+                new_todo.append(todo)
+                processed_ids.add(todo.id)
+            
+            # 添加未被处理的老代办事项
+            for old_todo in old.data:
+                if old_todo.id not in processed_ids:
+                    new_todo.append(old_todo)
+
+            # 按ID升序排序
+            new_todo.sort(key=lambda x: x.id)
+
+            new_completed_count = len([todo for todo in new_todo if todo.status == "completed"])
+
+            result = await task_service.set_todos(project_id, task_id, new_todo, notes, changed_by=operator)            
 
             
             if result.success:
