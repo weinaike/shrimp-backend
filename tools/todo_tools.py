@@ -70,7 +70,7 @@ def register_todo_tools(app: FastMCP):
     @app.tool
     async def todo_write(task_id: Annotated[str, "task ID"],
                          todos: List[TodoItem], 
-                         notes: Annotated[str, "notes for updating the todos"],
+                         notes: Annotated[str, "描述当前任务进展"],
                          operator: Annotated[str, "Agent's Name"]) -> Dict[str, Any]:
         """
 Before you use this tool, you MUST first create a task using `split_task` or `create_task` to generate a TaskID.
@@ -112,8 +112,7 @@ When in doubt, use this tool. Being proactive with todo management demonstrates 
             old_completed_count = len([todo for todo in old.data if todo.status == "completed"])
             new_completed_count = len([todo for todo in todos if todo.status == "completed"])
 
-            result = await task_service.set_todos(project_id, task_id, todos, notes, changed_by=operator)
-            
+            result = await task_service.set_todos(project_id, task_id, todos, notes, changed_by=operator)            
 
             
             if result.success:

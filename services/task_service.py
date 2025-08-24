@@ -137,6 +137,7 @@ class TaskService:
             update_data = updates.model_dump(exclude_unset=True)
 
             update_data["updated_at"] = datetime.now().astimezone()
+            update_data["notes"] = f"{current_task.notes}\n {datetime.now().astimezone()} {updates.notes}" if current_task.notes else updates.notes
 
             # Resolve dependencies if provided (handle both names and IDs)
             if "dependencies" in update_data:
@@ -445,7 +446,8 @@ class TaskService:
                 task_update = TaskUpdate(
                     status="completed",
                     summary=summary,
-                    session_id=session_id
+                    session_id=session_id,
+                    notes=f"verify task with {score} score. summary: {summary}"
                 )
                 
                 updated_task_response = await self.update_task(project_id, task_id, task_update)
@@ -618,6 +620,9 @@ class TaskService:
                 except Exception as e:
                     return ServiceResponse.validation_error(f"Invalid todo item {i}: {str(e)}")
             
+            task_data = await self.get_task(project_id, task_id)
+            task = task_data.data if task_data.success else None
+
             # Update task with new todos
             result = await self.db.tasks.update_one(
                 {
@@ -629,7 +634,7 @@ class TaskService:
                     "$set": {
                         "todos": validated_todos,
                         "updated_at": datetime.now().astimezone(),
-                        "notes": notes
+                        "notes": f"{task.notes}\n {datetime.now().astimezone()} {notes}" if task and task.notes else notes
                     }
                 }
             )

@@ -209,7 +209,6 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
         )
 
         response = await task_service.update_task(project_id, task_id, updates=update_data, changed_by="system")
-        # response = await task_service.get_task(project_id, task_id)
         
         if response.success and response.data:
             return MCPToolResponse.success(
