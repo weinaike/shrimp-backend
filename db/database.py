@@ -25,6 +25,7 @@ class MCPDatabase(Protocol):
     memories: AsyncIOMotorCollection
     embeddings: AsyncIOMotorCollection
     audit_logs: AsyncIOMotorCollection
+    json_documents: AsyncIOMotorCollection
 
 
 class DatabaseManager:
@@ -121,5 +122,16 @@ async def init_collections():
     await db.audit_logs.create_index([("project_id", 1), ("timestamp", -1)])
     await db.audit_logs.create_index([("project_id", 1), ("user", 1)])
     await db.audit_logs.create_index([("project_id", 1), ("action", 1)])
+    
+    # Create indexes for json_documents
+    await db.json_documents.create_index([("project_id", 1), ("name", 1)], unique=True)
+    await db.json_documents.create_index([("project_id", 1), ("session_id", 1)])
+    await db.json_documents.create_index([("project_id", 1), ("document_type", 1)])
+    await db.json_documents.create_index([("project_id", 1), ("tags", 1)])
+    await db.json_documents.create_index([("project_id", 1), ("is_public", 1)])
+    await db.json_documents.create_index([("project_id", 1), ("created_at", -1)])
+    await db.json_documents.create_index([("project_id", 1), ("updated_at", -1)])
+    await db.json_documents.create_index([("project_id", 1), ("access_count", -1)])
+    await db.json_documents.create_index([("session_id", 1), ("created_at", 1)])  # For session timeline queries
     
     logger.info("Database collections and indexes initialized")

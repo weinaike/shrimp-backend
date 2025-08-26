@@ -5,7 +5,13 @@ from .memory import Memory, MemoryCreate, MemoryUpdate
 from .version import TaskVersion, TaskVersionCollection
 from .embedding import Embedding, EmbeddingCreate
 from .audit import AuditLog
-from .base import PyObjectId
+from .json_document import (
+    JsonDocument, 
+    JsonDocumentCreate, 
+    JsonDocumentQuery,
+    JsonDocumentBatch,
+    DocumentType
+)
 
 __all__ = [
     "Task",
@@ -20,6 +26,10 @@ __all__ = [
     "Embedding",
     "EmbeddingCreate",
     "AuditLog",
-    "PyObjectId",
+    "JsonDocument",
+    "JsonDocumentCreate",
+    "JsonDocumentQuery",
+    "JsonDocumentBatch",
+    "DocumentType",
     "TodoItem"
 ]

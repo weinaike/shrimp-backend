@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from shrimp.api.routes.v1 import tasks, memories, versions
+from shrimp.api.routes.v1 import tasks, memories, versions, json_documents
 from shrimp.api.routes.health import router as health
 
 router = APIRouter()
@@ -12,3 +12,4 @@ router.include_router(health, prefix="/api", tags=["health"])
 router.include_router(tasks.router, prefix="/api", tags=["tasks"])
 router.include_router(memories.router, prefix="/api", tags=["memories"])
 router.include_router(versions.router, prefix="/api", tags=["versions"])
+router.include_router(json_documents.router, prefix="/api", tags=["json-documents"])
