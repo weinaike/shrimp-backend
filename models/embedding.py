@@ -34,6 +34,6 @@ class Embedding(DocumentBase):
     offset: int = Field(..., description="文本偏移量")
     chunk_size: int = Field(..., description="分块大小")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="额外元数据")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now())
 
     model_config = ConfigDict(validate_by_name=True)

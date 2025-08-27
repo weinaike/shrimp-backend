@@ -28,7 +28,7 @@ class TaskVersion(DocumentBase):
     payload: dict = Field(..., description="任务完整快照")
     operation: OperationType = Field(..., description="操作类型")
     changed_by: str = Field(..., description="操作者")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now().astimezone())
+    timestamp: datetime = Field(default_factory=lambda: datetime.now())
     message: Optional[str] = Field(None, description="提交信息")
     archived: bool = Field(default=False, description="是否已归档")
 

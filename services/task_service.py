@@ -40,8 +40,8 @@ class TaskService:
                 "current_version_id": str(ObjectId()),  # Generate initial version
                 "version_number": 1,
                 "status": TaskStatus.PENDING,
-                "created_at": datetime.now().astimezone(),
-                "updated_at": datetime.now().astimezone(),
+                "created_at": datetime.now(),
+                "updated_at": datetime.now(),
             }
             
             # Resolve dependencies (handle both names and IDs)
@@ -136,8 +136,8 @@ class TaskService:
             # Handle different update input types
             update_data = updates.model_dump(exclude_unset=True)
 
-            update_data["updated_at"] = datetime.now().astimezone()
-            update_data["notes"] = f"{current_task.notes}\n {datetime.now().astimezone()} {updates.notes}" if current_task.notes else updates.notes
+            update_data["updated_at"] = datetime.now()
+            update_data["notes"] = f"{current_task.notes}\n {datetime.now()} {updates.notes}" if current_task.notes else updates.notes
 
             # Resolve dependencies if provided (handle both names and IDs)
             if "dependencies" in update_data:
@@ -199,8 +199,8 @@ class TaskService:
                 },
                 {
                     "$set": {
-                        "deleted_at": datetime.now().astimezone(),
-                        "updated_at": datetime.now().astimezone()
+                        "deleted_at": datetime.now(),
+                        "updated_at": datetime.now()
                     }
                 }
             )
@@ -242,8 +242,8 @@ class TaskService:
                 {"project_id": project_id, "deleted_at": None},
                 {
                     "$set": {
-                        "deleted_at": datetime.now().astimezone(),
-                        "updated_at": datetime.now().astimezone()
+                        "deleted_at": datetime.now(),
+                        "updated_at": datetime.now()
                     }
                 }
             )
@@ -313,8 +313,8 @@ class TaskService:
                     "current_version_id": str(ObjectId()),
                     "version_number": 1,
                     "status": TaskStatus.PENDING,
-                    "created_at": datetime.now().astimezone(),
-                    "updated_at": datetime.now().astimezone(),
+                    "created_at": datetime.now(),
+                    "updated_at": datetime.now(),
                 }
                 tasks_data.append(task_data)
             
@@ -633,8 +633,8 @@ class TaskService:
                 {
                     "$set": {
                         "todos": validated_todos,
-                        "updated_at": datetime.now().astimezone(),
-                        "notes": f"{task.notes}\n {datetime.now().astimezone()} {notes}" if task and task.notes else notes
+                        "updated_at": datetime.now(),
+                        "notes": f"{task.notes}\n {datetime.now()} {notes}" if task and task.notes else notes
                     }
                 }
             )
@@ -990,8 +990,8 @@ class TaskService:
             "current_version_id": str(ObjectId()),
             "version_number": 1,
             "status": TaskStatus.PENDING,
-            "created_at": datetime.now().astimezone(),
-            "updated_at": datetime.now().astimezone(),
+            "created_at": datetime.now(),
+            "updated_at": datetime.now(),
         }
         
         # Resolve dependencies
@@ -1033,7 +1033,7 @@ class TaskService:
             tasks = tasks_response.data
             backup_data = {
                 "project_id": project_id,
-                "backup_timestamp": datetime.now().astimezone().isoformat(),
+                "backup_timestamp": datetime.now(),
                 "task_count": len(tasks),
                 "tasks": [task.model_dump() for task in tasks]
             }

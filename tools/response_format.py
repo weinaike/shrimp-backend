@@ -33,7 +33,7 @@ class MCPToolResponse:
             "operation": operation,
             "data": data,
             "message": message or f"{operation} completed successfully",
-            "timestamp": datetime.now().astimezone().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "metadata": metadata or {},
             "error": None
         }
@@ -62,7 +62,7 @@ class MCPToolResponse:
             "operation": operation,
             "data": None,
             "message": message,
-            "timestamp": datetime.now().astimezone().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "metadata": metadata or {},
             "error": {
                 "message": error_message,

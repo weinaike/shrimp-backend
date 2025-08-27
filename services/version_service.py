@@ -55,7 +55,7 @@ class VersionService:
                 "payload": task.model_dump(),
                 "operation": operation,
                 "changed_by": changed_by,
-                "timestamp": datetime.now().astimezone(),
+                "timestamp": datetime.now(),
                 "message": message or f"{operation} task",
                 "archived": False
             }
@@ -137,7 +137,7 @@ class VersionService:
             
             # Update the task with the reverted data
             updated_data = {**task_data}
-            updated_data["updated_at"] = datetime.now().astimezone()
+            updated_data["updated_at"] = datetime.now()
 
             # Remove version-related fields that would cause conflicts
             version_number = updated_data.pop("version_number", None)

@@ -22,8 +22,7 @@ class AuditLog(DocumentBase):
     ip_address: Optional[str] = Field(None, description="操作IP")
     user_agent: Optional[str] = Field(None, description="用户代理")
     request_id: Optional[str] = Field(None, description="请求ID")
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(datetime.timezone.utc))
-    
+    timestamp: datetime = Field(default_factory=lambda: datetime.now())
 
 class AuditLogCreate(DocumentBase):
     """Audit log creation model."""
