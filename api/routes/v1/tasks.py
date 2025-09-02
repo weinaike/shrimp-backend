@@ -128,7 +128,7 @@ async def get_projects():
         version_projects = await db.task_versions.distinct("project_id")
         
         # Combine and deduplicate
-        all_projects = list(set(task_projects + version_projects))
+        all_projects = sorted(list(set(task_projects + version_projects)))
         
         return {
             "projects": all_projects,
