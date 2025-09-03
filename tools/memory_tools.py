@@ -9,6 +9,7 @@ This module provides comprehensive memory management functionality including:
 """
 
 from tokenize import Name
+import traceback
 from typing import Annotated, Any, Dict, List, Optional
 from fastmcp import FastMCP
 
@@ -56,9 +57,10 @@ def register_memory_tools(app: FastMCP):
                 message=f"Successfully created memory with {len(memory_create.tags)} tags. you can do NEXT todo or task if have",
             )
         except Exception as e:
+            error_detail = traceback.format_exc()
             return MCPToolResponse.error(
                 operation="add_memory",
-                error_message=str(e),
+                error_message=f"Failed to add memory: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool",
                 metadata={"project_id": project_id}
             )
 
@@ -124,9 +126,10 @@ def register_memory_tools(app: FastMCP):
                 }
             )
         except Exception as e:
+            error_detail = traceback.format_exc()
             return MCPToolResponse.error(
                 operation="query_memories",
-                error_message=str(e),
+                error_message=f"Failed to query memories: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool",
                 metadata={
                     "project_id": project_id,
                     "filters": {

@@ -9,6 +9,7 @@ This module provides comprehensive task management functionality including:
 - Project isolation through project_id
 """
 
+import traceback
 from typing import Annotated, List, Literal, Optional, Dict, Any, Union
 from fastmcp import FastMCP
 
@@ -153,22 +154,29 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
 
             
         """
-        task_service = await get_mcp_task_service()
-        project_id = BaseTool.get_project_id()
-        session_id = BaseTool.get_session_id()
-        task_create.session_id = session_id  # Set session_id for task tracking
-        response = await task_service.create_task(project_id, task_create, changed_by=operator)
+        try:
+            task_service = await get_mcp_task_service()
+            project_id = BaseTool.get_project_id()
+            session_id = BaseTool.get_session_id()
+            task_create.session_id = session_id  # Set session_id for task tracking
+            response = await task_service.create_task(project_id, task_create, changed_by=operator)
 
-        if response.success and response.data:
-            return MCPToolResponse.success(
-                data=response.data.model_dump(),
-                operation="create_task",
-                message=f"Successfully created task: {response.data.name}. {create_task_return_prompt}",
-            )
-        else:
+            if response.success and response.data:
+                return MCPToolResponse.success(
+                    data=response.data.model_dump(),
+                    operation="create_task",
+                    message=f"Successfully created task: {response.data.name}. {create_task_return_prompt}",
+                )
+            else:
+                return MCPToolResponse.error(
+                    operation="create_task",
+                    error_message=response.error or "Failed to create task",
+                )
+        except Exception as e:
+            error_detail = traceback.format_exc()
             return MCPToolResponse.error(
                 operation="create_task",
-                error_message=response.error or "Failed to create task",
+                error_message=f"Failed to create task: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool"
             )
 
     acquire_task_return_prompt = '''
@@ -338,27 +346,35 @@ When in doubt, use this tool. Being proactive with task management demonstrates 
                     "task_id": task_id
                 }
             )
-        task_update.session_id = BaseTool.get_session_id()  # Set session_id for task tracking
-        response = await task_service.update_task(project_id, task_id, task_update, 
-                                                  if_match=None, changed_by=operator)
+        try:
+            task_update.session_id = BaseTool.get_session_id()  # Set session_id for task tracking
+            response = await task_service.update_task(project_id, task_id, task_update, 
+                                                    if_match=None, changed_by=operator)
 
-        if response.success and response.data:
-            return MCPToolResponse.success(
-                data=response.data.model_dump(),
-                operation="update_task",
-                message=f"Successfully updated task: {response.data.name}",
-                metadata={
-                    "project_id": project_id,
-                    "task_id": task_id,
-                    "task_status": response.data.status
-                }
-            )
-        else:
-            error_code = "VERSION_CONFLICT" if "conflict" in (response.error or "").lower() else "OPERATION_FAILED"
+            if response.success and response.data:
+                return MCPToolResponse.success(
+                    data=response.data.model_dump(),
+                    operation="update_task",
+                    message=f"Successfully updated task: {response.data.name}",
+                    metadata={
+                        "project_id": project_id,
+                        "task_id": task_id,
+                        "task_status": response.data.status
+                    }
+                )
+            else:
+                error_code = "VERSION_CONFLICT" if "conflict" in (response.error or "").lower() else "OPERATION_FAILED"
+                return MCPToolResponse.error(
+                    operation="update_task",
+                    error_message=response.error or f"Failed to update task {task_id}",
+                    error_code=error_code,
+                    metadata={"project_id": project_id, "task_id": task_id}
+                )
+        except Exception as e:
+            error_detail = traceback.format_exc()
             return MCPToolResponse.error(
                 operation="update_task",
-                error_message=response.error or f"Failed to update task {task_id}",
-                error_code=error_code,
+                error_message=f"Failed to update task: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool",
                 metadata={"project_id": project_id, "task_id": task_id}
             )
 

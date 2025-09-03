@@ -1,4 +1,5 @@
 
+import traceback
 from typing import Annotated, List, Optional, Dict, Any, Union
 from fastmcp import FastMCP
 
@@ -161,7 +162,8 @@ When in doubt, use this tool. Being proactive with todo management demonstrates 
                 )
                 
         except Exception as e:
+            error_detail = traceback.format_exc()
             return MCPToolResponse.error(
                 operation="todo_write",
-                error_message=f"Failed to update todos: {str(e)}"
+                error_message=f"Failed to update todos: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool",
             )

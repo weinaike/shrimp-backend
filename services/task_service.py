@@ -1,6 +1,7 @@
 """Refactored Task service for business logic."""
 
 import json
+import traceback
 from typing import List, Optional, Dict, Any, cast, Union
 from datetime import datetime, timezone
 from enum import Enum
@@ -75,8 +76,9 @@ class TaskService:
             return ServiceResponse.success_response(task, "Task created successfully")
             
         except Exception as e:
-            return ServiceResponse.error_response(f"Failed to create task: {str(e)}")
-    
+            error_detail = traceback.format_exc()
+            return ServiceResponse.error_response(f"Failed to create task: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool")
+
     async def get_task(self, project_id: str, task_id: str) -> ServiceResponse[Task]:
         """Get a task by ID."""
         try:
@@ -182,8 +184,9 @@ class TaskService:
         except bson_errors.InvalidId:
             return ServiceResponse.validation_error("Invalid task ID format")
         except Exception as e:
-            return ServiceResponse.error_response(f"Failed to update task: {str(e)}")
-    
+            error_detail = traceback.format_exc()
+            return ServiceResponse.error_response(f"Failed to update task: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool.")
+
     async def delete_task(self, project_id: str, task_id: str, changed_by: str = "system") -> ServiceResponse[bool]:
         """Soft delete a task."""
         try:
@@ -401,8 +404,9 @@ class TaskService:
             )
             
         except Exception as e:
-            return ServiceResponse.error_response(f"Bulk operation failed: {str(e)}")
-    
+            error_detail = traceback.format_exc()
+            return ServiceResponse.error_response(f"split task operation failed: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool.")
+
     # ==================== Business Operations ====================
     
     async def verify_task(
@@ -470,8 +474,9 @@ class TaskService:
                 )
                 
         except Exception as e:
-            return ServiceResponse.error_response(f"Failed to verify task: {str(e)}")
-    
+            error_detail = traceback.format_exc()
+            return ServiceResponse.error_response(f"Failed to verify task: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool.")
+
     async def get_task_statistics(self, project_id: str) -> ServiceResponse[Dict[str, Any]]:
         """Get task statistics for a project."""
         try:
@@ -618,8 +623,9 @@ class TaskService:
                     
                     validated_todos.append(todo_dict)
                 except Exception as e:
-                    return ServiceResponse.validation_error(f"Invalid todo item {i}: {str(e)}")
-            
+                    error_detail = traceback.format_exc()
+                    return ServiceResponse.validation_error(f"Invalid todo item {i}: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool")
+
             task_data = await self.get_task(project_id, task_id)
             task = task_data.data if task_data.success else None
 
@@ -659,7 +665,8 @@ class TaskService:
         except bson_errors.InvalidId:
             return ServiceResponse.validation_error("Invalid task ID format")
         except Exception as e:
-            return ServiceResponse.error_response(f"Failed to set todos: {str(e)}")
+            error_detail = traceback.format_exc()
+            return ServiceResponse.error_response(f"Failed to write todos: {str(e)}\n{error_detail}\nPlease carefully check the tool interface description and strictly follow the parameter specifications to call the tool")
 
     # ==================== Helper Methods ====================
     
