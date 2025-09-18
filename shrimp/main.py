@@ -81,11 +81,16 @@ app = create_application()
 
 app.mount("/", mcp_app)
 
-if __name__ == "__main__":
 
+def main():
+    """Main entry point for the application."""
     uvicorn.run(
         "shrimp.main:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
     )
+
+
+if __name__ == "__main__":
+    main()
